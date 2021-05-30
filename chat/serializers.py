@@ -27,4 +27,5 @@ class CustomObtainPairSerializer(TokenObtainPairSerializer):
 
         # Add custom claims
         token['username'] = user.login
+        token['user_certificate'] = user.certification.decode()
         return token

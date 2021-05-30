@@ -3,6 +3,7 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 import json
 from .models import Message
+from .shared.utils import encrypt_from_pem_crt, Rsa_Service
 
 User = get_user_model()
 
@@ -22,7 +23,7 @@ class ChatConsumer(WebsocketConsumer):
         author = self.scope['user'].login
 
         author_user = User.objects.filter(username=author)[0]
-        recipient_user = User.objects.filter(username=author)[0]
+        recipient_user = User.objects.filter(username=recipient)[0]
 
         message = Message.objects.create(
             author=author_user,
@@ -30,6 +31,8 @@ class ChatConsumer(WebsocketConsumer):
             content=data['message'])
         content = {
             'command': 'new_message',
+            'to': recipient,
+            'from': author,
             'message': self.message_to_json(message)
         }
         return self.send_chat_message(content)
@@ -61,6 +64,7 @@ class ChatConsumer(WebsocketConsumer):
             self.channel_name
         )
         self.accept()
+        self.send(Rsa_Service.get_certificate())
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(
@@ -73,22 +77,43 @@ class ChatConsumer(WebsocketConsumer):
         self.commands[data['command']](self, data)
 
     def send_chat_message(self, message):
-        async_to_sync(self.channel_layer.group_send)(
-            message['to'],
-            {
-                'type': 'chat_message',
-                'message': message,
-            }
-        )
+        recipient_user = User.objects.filter(username=message['to'])[0]
+        to_pen_crt = recipient_user.certificate
+        to_message = json.dumps({
+            'type': 'chat_message',
+            'message': message,
+        })
+        from_message = json.dumps({
+            'type': 'chat_message',
+            'message': message
+        })
         async_to_sync(self.channel_layer.group_send)(
             message['from'],
             {
-                'type': 'chat_message',
-                'message': message
+                'cipherMessage': encrypt_from_pem_crt(
+                    self.scope['user_certificate'].encode(),
+                    message=from_message
+                ),
+            }
+        )
+        async_to_sync(self.channel_layer.group_send)(
+            message['to'],
+            {
+                'cipherMessage': encrypt_from_pem_crt(
+                    to_pen_crt.encode(),
+                    message=to_message
+                ),
             }
         )
 
     def send_message(self, message):
+        # async_to_sync(self.channel_layer.group_send)(
+        #     'self.channel_name',
+        #     {
+        #         'type': 'chat_message',
+        #         'message': 'e'
+        #     }
+        # )
         self.send(text_data=json.dumps(message))
 
     def chat_message(self, event):
