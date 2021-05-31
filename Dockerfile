@@ -2,7 +2,7 @@
 FROM python:3
 ENV PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app \
-    DJANGO_SETTINGS_MODULE=myChannelTuto.settings \
+    DJANGO_SETTINGS_MODULE=config.settings.production \
     PORT=8000 \
     WEB_CONCURRENCY=3
 
