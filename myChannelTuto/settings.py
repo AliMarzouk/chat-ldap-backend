@@ -29,7 +29,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'chat',
+    'myChannelTuto.chat',
     'channels',
     'django.contrib.admin',
     'django.contrib.auth',
