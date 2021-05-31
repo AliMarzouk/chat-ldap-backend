@@ -12,6 +12,17 @@ COPY requirements.txt /code/
 RUN pip install -r requirements.txt
 COPY . /code/
 
+# Install operating system dependencies.
+RUN apt-get update -y && \
+    apt-get install -y apt-transport-https rsync gettext libgettextpo-dev && \
+    curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
+    apt-get install -y nodejs &&\
+    rm -rf /var/lib/apt/lists/*
+
+RUN pip install "gunicorn>=19.8,<19.9"
+
+CMD gunicorn config.wsgi:application
+
 #RUN apt update && apt -y install firewalld
 #RUN systemctl start firewalld && sudo systemctl enable firewalld && sudo systemctl status firewalld
 #RUN firewall-cmd --add-port=389/tcp --permanent
