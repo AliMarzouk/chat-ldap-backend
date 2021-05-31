@@ -9,7 +9,8 @@ class LDAP_server:
     def __init__(self, uri='ldap://ldap', login=ldap_login, password=ldap_password):
         self.server = Server(uri)
         self.ldap_base = ldap_base
-        self.connection = Connection(self.server, user=login, password=password, auto_bind=True)
+        print(login)
+        self.connection = Connection(self.server, user=login, password=password, auto_bind=True, auto_referrals=False)
 
     def create(self, client: Client):
         # create a client in LDAP server
