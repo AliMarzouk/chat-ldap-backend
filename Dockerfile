@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
 FROM python:3
 ENV PYTHONUNBUFFERED=1 \
-#    PYTHONPATH="${pwd}/code" \
-#    DJANGO_SETTINGS_MODULE=myChannelTuto.settings \
+    PYTHONPATH=/code \
+    DJANGO_SETTINGS_MODULE=myChannelTuto.settings \
     PORT=8000 \
     WEB_CONCURRENCY=3
 
@@ -21,7 +21,7 @@ RUN apt-get update -y && \
 
 RUN pip install "gunicorn>=19.8,<19.9"
 
-CMD gunicorn config.wsgi:application
+CMD gunicorn myChannelTuto.wsgi:application
 
 #RUN apt update && apt -y install firewalld
 #RUN systemctl start firewalld && sudo systemctl enable firewalld && sudo systemctl status firewalld
