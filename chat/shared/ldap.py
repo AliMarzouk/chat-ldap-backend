@@ -6,7 +6,7 @@ from ldap3 import *
 
 
 class LDAP_server:
-    def __init__(self, uri='ldap://localhost', login=ldap_login, password=ldap_password):
+    def __init__(self, uri='ldap://ldap', login=ldap_login, password=ldap_password):
         self.server = Server(uri)
         self.ldap_base = ldap_base
         self.connection = Connection(self.server, user=login, password=password, auto_bind=True)

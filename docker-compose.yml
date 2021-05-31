@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: mychat
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+
+  redis:
+    image: redis
+    ports:
+    - 6379:6379
+
+  ldap:
+    image: osixia/openldap:1.2.4
+#    run: ldapsearch -x -H ldap://localhost -b dc=example,dc=org -D "cn=admin,dc=example,dc=org" -w admin
+    ports:
+      - 389:389
+      - 636:636
+
+  app:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - ldap
+      - db
+      - redis
+#
+#docker run -p 6379:6379 --name redis -d redis
+#docker run -p 389:389 -p 636:636 --name my-openldap-container --detach osixia/openldap:1.2.4
