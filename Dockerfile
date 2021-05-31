@@ -21,7 +21,7 @@ RUN apt-get update -y && \
 
 RUN pip install "gunicorn>=19.8,<19.9"
 
-CMD gunicorn myChannelTuto.wsgi:application
+CMD gunicorn myChannelTuto.asgi:application
 
 #RUN apt update && apt -y install firewalld
 #RUN systemctl start firewalld && sudo systemctl enable firewalld && sudo systemctl status firewalld
