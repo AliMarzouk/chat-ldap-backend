@@ -1,6 +1,9 @@
 build:
   docker:
     web: Dockerfile
+    db: mysql:5.7
+      ports:
+
 release:
   db:
     image: mysql:5.7

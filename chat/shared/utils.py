@@ -124,6 +124,7 @@ class RsaUtils:
             f.write(self.public_key.public_bytes(Encoding.PEM, format=PublicFormat.PKCS1))
 
     def encrypt(self, message, pb_key=None):
+        print(message)
         if pb_key is None:
             pb_key = self.public_key
         ciphertext = pb_key.encrypt(

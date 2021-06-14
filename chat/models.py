@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Q
 from pygments.lexers import get_all_lexers
 from pygments.styles import get_all_styles
 from pygments.lexers import get_lexer_by_name
@@ -67,8 +68,8 @@ class Message(models.Model):
     def __str__(self):
         return self.author.username
 
-    def last_10_messages():
-        return Message.objects.order_by('-timestamp').all()[:10]
+    def last_10_messages(user):
+        return Message.objects.order_by('-timestamp').filter(Q(author=user) | Q(recipient=user)).all()[:10]
 
 #
 #
