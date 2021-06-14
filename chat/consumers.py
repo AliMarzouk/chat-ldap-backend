@@ -96,7 +96,7 @@ class ChatConsumer(WebsocketConsumer):
                 'type': 'chat_message',
                 'cipherMessage': b64encode(encrypt_from_pem_crt(
                     # self.scope['user_certificate'].encode(),
-                    from_pen_crt.encode(),
+                    to_pen_crt.encode(),
                     message=message['message'].encode()
                 )).decode(),
             }
