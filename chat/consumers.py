@@ -90,25 +90,29 @@ class ChatConsumer(WebsocketConsumer):
         self.commands[data['command']](self, data)
 
     def send_chat_message(self, message, to_pen_crt, from_pen_crt):
+        encrypt_1 = encrypt_from_pem_crt(
+                    # self.scope['user_certificate'].encode(),
+                    to_pen_crt.encode(),
+                    message=message['message'].encode()
+                )
+        print(encrypt_1)
+        encrypt_2 = encrypt_from_pem_crt(
+                    to_pen_crt.encode(),
+                    message=message['message'].encode()
+                )
+        print(encrypt_2)
         async_to_sync(self.channel_layer.group_send)(
             'chat_%s' % message['from'],
             {
                 'type': 'chat_message',
-                'cipherMessage': b64encode(encrypt_from_pem_crt(
-                    # self.scope['user_certificate'].encode(),
-                    to_pen_crt.encode(),
-                    message=message['message'].encode()
-                )).decode(),
+                'cipherMessage': b64encode(encrypt_1).decode(),
             }
         )
         async_to_sync(self.channel_layer.group_send)(
             'chat_%s' % message['to'],
             {
                 'type': 'chat_message',
-                'cipherMessage': b64encode(encrypt_from_pem_crt(
-                    to_pen_crt.encode(),
-                    message=message['message'].encode()
-                )).decode(),
+                'cipherMessage': b64encode(encrypt_2).decode(),
             }
         )
 
